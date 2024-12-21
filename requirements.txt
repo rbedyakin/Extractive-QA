@@ -1,0 +1,6 @@
+torch==2.4.1
+lightning==2.4.0
+transformers==4.46.1
+datasets==3.0.1
+jsonargparse[signatures]==4.34.0
+torchmetrics==1.5.1
