@@ -11,7 +11,7 @@ pip install -r requirements.txt
 
 ## How to use
 ```
-python main.py --config config.yaml
+python main.py --config ./config/t5.yaml
 ```
 
 ## Data

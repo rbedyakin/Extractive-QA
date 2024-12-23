@@ -41,11 +41,15 @@ trainer:
   reload_dataloaders_every_n_epochs: 0
   default_root_dir: null
 model:
-  pretrained_model_name: "google-t5/t5-small"
-  batch_size: 4
-  learning_rate: 1e-4
+  class_path: src.model.T5QAModel
+  init_args:
+    pretrained_model_name: "google-t5/t5-small"
+    batch_size: 4
+    learning_rate: 1e-4
 data:
-  dataset_path: "xwjzds/extractive_qa_question_answering_hr"
-  num_workers: 2
+  class_path: src.datamodule.T5QAData
+  init_args:
+    dataset_path: "xwjzds/extractive_qa_question_answering_hr"
+    num_workers: 2
 optimizer: null
 lr_scheduler: null

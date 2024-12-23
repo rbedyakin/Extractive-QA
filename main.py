@@ -2,16 +2,16 @@ from lightning.pytorch.cli import LightningCLI
 import torch
 import torch.nn.functional as F
 import lightning as L
-from model import LitTokenClassification
-from datamodule import TokenClassificationData
+from src.model import T5QAModel, BertQAModel #
+from src.datamodule import T5QAData, BertQAData
 
 
 class MyLightningCLI(LightningCLI):
 
     def add_arguments_to_parser(self, parser):
-        parser.link_arguments("model.pretrained_model_name",
-                              "data.pretrained_model_name")
-        parser.link_arguments("model.batch_size", "data.batch_size")
+        parser.link_arguments("model.init_args.pretrained_model_name",
+                              "data.init_args.pretrained_model_name")
+        parser.link_arguments("model.init_args.batch_size", "data.init_args.batch_size")
         # parser.link_arguments("data.label_names",
         #                       "model.label_names",
         #                       apply_on="instantiate")
@@ -19,8 +19,6 @@ class MyLightningCLI(LightningCLI):
 
 def cli_main():
     cli = MyLightningCLI(
-        model_class=LitTokenClassification,
-        datamodule_class=TokenClassificationData,
         trainer_class=L.Trainer,
         #  trainer_defaults={
         #      "max_epochs": 3,
