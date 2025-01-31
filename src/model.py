@@ -169,7 +169,7 @@ class T5QAModel(L.LightningModule):
         ]
 
 
-class BertQAModel(L.LightningModule):
+class ModernBertQAModel(L.LightningModule):
 
     def __init__(
         self,
@@ -189,7 +189,11 @@ class BertQAModel(L.LightningModule):
 
         self.tokenizer = AutoTokenizer.from_pretrained(pretrained_model_name)
 
-        self.classifier = nn.Linear(self.pretrained_model.config.hidden_size,
+        self.first_linear = nn.Linear(self.pretrained_model.config.hidden_size,
+                                self.pretrained_model.config.hidden_size//2)
+        self.non_linear = nn.LeakyReLU(0.5)
+        self.dropout = nn.Dropout(0.2)
+        self.classifier = nn.Linear(self.pretrained_model.config.hidden_size//2,
                                     2)
 
         self.train_metrics = QA_Metric(stage="train")
@@ -205,6 +209,9 @@ class BertQAModel(L.LightningModule):
                                         attention_mask=attention_mask,
                                         output_hidden_states=True)
         h_cls = outputs.hidden_states[-1]
+        h_cls = self.first_linear(h_cls)
+        h_cls = self.non_linear(h_cls)
+        h_cls = self.dropout(h_cls)
         logits = self.classifier(h_cls)
 
         return logits
@@ -322,5 +329,28 @@ class BertQAModel(L.LightningModule):
     def configure_optimizers(self) -> AdamW:
         """ configure optimizers """
         # return torch.optim.AdamW(self.parameters(), lr=self.learning_rate)
-        optimizer = AdamW(self.parameters(), lr=self.learning_rate)
-        return optimizer
+
+        models = [self.pretrained_model, self.classifier]
+        no_decay = ["bias", "LayerNorm.weight"]
+        optimizer_grouped_parameters = optimizer_grouped_parameters = [
+            {
+                "params": [
+                    p for model in models for n, p in model.named_parameters()
+                    if not any(nd in n for nd in no_decay)
+                ],
+                "weight_decay":
+                0.01,
+            },
+            {
+                "params": [
+                    p for model in models for n, p in model.named_parameters()
+                    if any(nd in n for nd in no_decay)
+                ],
+                "weight_decay":
+                0.0,
+            },
+        ]
+        optimizer = AdamW(optimizer_grouped_parameters, lr=self.learning_rate)
+        return [optimizer], [
+            torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.7)
+        ]

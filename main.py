@@ -2,8 +2,8 @@ from lightning.pytorch.cli import LightningCLI
 import torch
 import torch.nn.functional as F
 import lightning as L
-from src.model import T5QAModel, BertQAModel #
-from src.datamodule import T5QAData, BertQAData
+from src.model import T5QAModel, ModernBertQAModel # noqa: F401
+from src.datamodule import T5QAData, ModernBertQAData # noqa: F401
 
 
 class MyLightningCLI(LightningCLI):

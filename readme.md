@@ -10,8 +10,14 @@ pip install -r requirements.txt
 ```
 
 ## How to use
+
+### T5 model
 ```
 python main.py --config ./config/t5.yaml
+```
+### BERT-like models (ModernBERT, DeBERTa, BERT, ...)
+```
+python main.py --config ./config/modernbert.yaml
 ```
 
 ## Data
@@ -21,6 +27,6 @@ Please refer to [HR-MultiWOZ: A Task Oriented Dialogue (TOD) Dataset for HR LLM 
 ## Models
 
 - [x] T5 <br>
-- [ ] ModernBert <br>
+- [x] ModernBERT <br>
 - [ ] LLama 3.2 <br>
 - [ ] NuExtract-1.5 <br>

@@ -123,7 +123,7 @@ class T5QAData(L.LightningDataModule):
                                            num_workers=self.num_workers)
 
 
-class BertQAData(L.LightningDataModule):
+class ModernBertQAData(L.LightningDataModule):
 
     def __init__(self, dataset_path: str, pretrained_model_name: str,
                  batch_size: int, num_workers: int):
@@ -187,8 +187,8 @@ class BertQAData(L.LightningDataModule):
             padding="max_length",
             is_split_into_words=True,
             return_tensors="pt",
+            max_length=500,
             # max_length=self.tokenizer.model_max_length,
-            max_length=1024,
         )
 
         new_labels = []
@@ -227,7 +227,7 @@ class BertQAData(L.LightningDataModule):
             self.data_collator = DataCollatorForTokenClassification(
                 tokenizer=self.tokenizer,
                 padding="max_length",
-                max_length=1024,
+                max_length=500,
                 label_pad_token_id=0,
             )
 
@@ -261,19 +261,10 @@ class BertQAData(L.LightningDataModule):
 
 
 if __name__ == "__main__":
-    data = BertQAData(
+    data = ModernBertQAData(
         dataset_path="xwjzds/extractive_qa_question_answering_hr",
-        pretrained_model_name='google-bert/bert-base-cased',
+        pretrained_model_name="answerdotai/ModernBERT-base",
         batch_size=4,
         num_workers=2)
 
     data.setup(stage='fit')
-
-    # import torch.nn.functional as F
-    # for item in data.train_dataloader():
-    #     v = torch.argmax(item['labels'], dim=-1)
-    #     print(v)
-    #     print(item['labels'][:,v])
-    #     y = F.one_hot(item['labels'], num_classes=2)
-    #     print(y)
-    #     input()
